@@ -15,7 +15,7 @@ public class GameFrame extends JFrame implements ActionListener {
     JLabel label2 = new JLabel("Комп'ютер:");
     JLabel label3 = new JLabel("-");
     Cities cities = new Cities();
-    int turnCount = 0;
+    int movesCount = 0;
     int compScore = 0;
 
     public GameFrame() {
@@ -56,7 +56,7 @@ public class GameFrame extends JFrame implements ActionListener {
                     compScore++;
                     resultMessage("Упс! Ви програли");
                 } else {
-                    if (turnCount == 0) {
+                    if (movesCount == 0) {
                         char lastChar = Character.toLowerCase(str.charAt(str.length() - 1));
                         if (cities.cityList.contains(str)) {
                             String compCity = cities.findCity(lastChar);
@@ -68,6 +68,7 @@ public class GameFrame extends JFrame implements ActionListener {
                                 compScore++;
                                 cities.incrementUserScore();
                                 text.setText("");
+                                cities.cityList.remove(str);
                             }
                         } else {
                             JOptionPane.showMessageDialog(this, "Місто не знайдено або вже використано", "ERROR", JOptionPane.ERROR_MESSAGE);
@@ -85,7 +86,7 @@ public class GameFrame extends JFrame implements ActionListener {
                                     resultMessage("Урааа! Ви виграли");
                                 } else {
                                     label3.setText(compCity);
-                                    turnCount++;
+                                    movesCount++;
                                     text.setText("");
                                     compScore++;
                                     cities.incrementUserScore();
