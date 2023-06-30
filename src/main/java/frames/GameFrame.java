@@ -15,6 +15,11 @@ public class GameFrame extends JFrame implements ActionListener {
     JLabel label2 = new JLabel("Комп'ютер:");
     JLabel label3 = new JLabel("-");
     Cities cities = new Cities();
+    JMenuBar menuBar = new JMenuBar();
+    JMenu menu = new JMenu("Меню");
+    JMenuItem newGameItem = new JMenuItem("Нова гра");
+    JMenuItem hintItem = new JMenuItem("Підказка");
+    JMenuItem exitItem = new JMenuItem("Вихід");
     int movesCount = 0;
     int compScore = 0;
 
@@ -34,6 +39,15 @@ public class GameFrame extends JFrame implements ActionListener {
 
         text.setBounds(30, 100, 150, 31);
 
+        hintItem.addActionListener(this);
+        newGameItem.addActionListener(this);
+        exitItem.addActionListener(this);
+        menu.add(newGameItem);
+        menu.add(hintItem);
+        menu.add(exitItem);
+        menuBar.add(menu);
+
+        this.setJMenuBar(menuBar);
         this.setTitle("Міста");
         this.setLayout(null);
         this.setResizable(false);
@@ -103,6 +117,16 @@ public class GameFrame extends JFrame implements ActionListener {
                     }
                 }
             }
+        } else if (e.getActionCommand().equals("Підказка")) {
+            String lastCompCity = cities.getLastCity();
+            char lastChar = Character.toLowerCase(lastCompCity.charAt(lastCompCity.length() - 1));
+            String hintCity = cities.cityList.stream().filter(city -> Character.toLowerCase(city.charAt(0)) == Character.toLowerCase(lastChar)).findFirst().orElse("Немає допустимих підказок");
+            text.setText(hintCity);
+        } else if (e.getActionCommand().equals("Нова гра")){
+            this.dispose();
+            new GameFrame();
+        } else if (e.getActionCommand().equals("Вихід")){
+            this.dispose();
         }
     }
 
