@@ -12,8 +12,16 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.13.0'
+    implementation group: 'org.jsoup', name: 'jsoup', version: '1.16.1'
 }
 
 test {
     useJUnitPlatform()
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }
