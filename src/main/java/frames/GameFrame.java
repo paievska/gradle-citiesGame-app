@@ -47,6 +47,7 @@ public class GameFrame extends JFrame implements ActionListener {
         menu.add(exitItem);
         menuBar.add(menu);
 
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setJMenuBar(menuBar);
         this.setTitle("Міста");
         this.setLayout(null);
@@ -72,13 +73,14 @@ public class GameFrame extends JFrame implements ActionListener {
                 } else {
                     if (movesCount == 0) {
                         char lastChar = Character.toLowerCase(str.charAt(str.length() - 1));
-                        if (cities.cityList.contains(str)) {
+                        if (cities.cityList.stream().anyMatch(city -> city.equalsIgnoreCase(str))) {
                             String compCity = cities.findCity(lastChar);
                             if (compCity == null) {
                                 cities.incrementUserScore();
                                 resultMessage("Урааа! Ви виграли");
                             } else {
                                 label3.setText(compCity);
+                                label3.setForeground(Color.getHSBColor(39f, 1f, 1f));
                                 compScore++;
                                 cities.incrementUserScore();
                                 text.setText("");
@@ -93,7 +95,7 @@ public class GameFrame extends JFrame implements ActionListener {
                         String lastCompCity = cities.getLastCity();
                         char lastChar = Character.toLowerCase(lastCompCity.charAt(lastCompCity.length() - 1));
                         if (Character.toLowerCase(str.charAt(0)) == lastChar) {
-                            if (cities.cityList.contains(str)) {
+                            if (cities.cityList.stream().anyMatch(city -> city.equalsIgnoreCase(str))) {
                                 String compCity = cities.findCity(str.charAt(str.length() - 1));
                                 if (compCity == null) {
                                     cities.incrementUserScore();
@@ -120,12 +122,13 @@ public class GameFrame extends JFrame implements ActionListener {
         } else if (e.getActionCommand().equals("Підказка")) {
             String lastCompCity = cities.getLastCity();
             char lastChar = Character.toLowerCase(lastCompCity.charAt(lastCompCity.length() - 1));
-            String hintCity = cities.cityList.stream().filter(city -> Character.toLowerCase(city.charAt(0)) == Character.toLowerCase(lastChar)).findFirst().orElse("Немає допустимих підказок");
+            String hintCity = cities.cityList.stream().filter(city -> Character.toLowerCase(city.charAt(0)) == Character.toLowerCase(lastChar)).findFirst().orElse("Немає підказок");
             text.setText(hintCity);
-        } else if (e.getActionCommand().equals("Нова гра")){
+            text.setForeground(Color.blue);
+        } else if (e.getActionCommand().equals("Нова гра")) {
             this.dispose();
             new GameFrame();
-        } else if (e.getActionCommand().equals("Вихід")){
+        } else if (e.getActionCommand().equals("Вихід")) {
             this.dispose();
         }
     }
