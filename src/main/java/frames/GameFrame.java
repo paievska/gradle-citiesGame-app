@@ -124,7 +124,6 @@ public class GameFrame extends JFrame implements ActionListener {
             char lastChar = Character.toLowerCase(lastCompCity.charAt(lastCompCity.length() - 1));
             String hintCity = cities.cityList.stream().filter(city -> Character.toLowerCase(city.charAt(0)) == Character.toLowerCase(lastChar)).findFirst().orElse("Немає підказок");
             text.setText(hintCity);
-            text.setForeground(Color.blue);
         } else if (e.getActionCommand().equals("Нова гра")) {
             this.dispose();
             new GameFrame();
