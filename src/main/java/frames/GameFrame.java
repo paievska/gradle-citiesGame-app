@@ -142,10 +142,12 @@ public class GameFrame extends JFrame implements ActionListener {
             }
         } else if (e.getActionCommand().equals("<html>Підказка <span style='color: red'> -150$</span></html>")) {
             if (userScore >= 150) {
-                userScore -= 150;
                 String lastCompCity = cities.getLastCity();
                 char lastChar = Character.toLowerCase(lastCompCity.charAt(lastCompCity.length() - 1));
                 String hintCity = cities.cityList.stream().filter(city -> Character.toLowerCase(city.charAt(0)) == Character.toLowerCase(lastChar)).findFirst().orElse("Немає підказок");
+                if (!hintCity.equalsIgnoreCase("Немає підказок")){
+                    userScore -= 150;
+                }
                 text.setText(hintCity);
             } else {
                 JOptionPane.showMessageDialog(this, "Недостатньо коштів", "Помилка", JOptionPane.ERROR_MESSAGE);
