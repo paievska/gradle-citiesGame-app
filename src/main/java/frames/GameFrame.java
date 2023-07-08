@@ -18,27 +18,28 @@ public class GameFrame extends JFrame implements ActionListener {
     JMenuBar menuBar = new JMenuBar();
     JMenu menu = new JMenu("Меню");
     JMenuItem newGameItem = new JMenuItem("Нова гра");
-    JMenuItem hintItem = new JMenuItem("Підказка");
+    JMenuItem hintItem = new JMenuItem("<html>Підказка <span style='color: red'> -150$</span></html>");
     JMenuItem exitItem = new JMenuItem("Вихід");
     int movesCount = 0;
     int compScore = 0;
+    int userScore = 0;
+    JLabel scoreLabel = new JLabel("<html>Бали: " + userScore + "<span style='color: green'>$</span></html>");
+    JLabel timeLabel = new JLabel("Час: 0 с");
+    long startTime;
+    Timer timer;
 
     public GameFrame() {
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/image.png")));
-
         label.setFont(new Font("Main", Font.BOLD, 15));
         label.setBounds(200, 85, 200, 50);
         label2.setFont(new Font("Main", Font.BOLD, 15));
         label2.setBounds(200, 150, 200, 50);
         label3.setFont(new Font("Main", Font.BOLD, 15));
         label3.setBounds(290, 150, 200, 50);
-
         button.setBounds(30, 160, 150, 31);
         button.setFocusable(false);
         button.addActionListener(this);
-
         text.setBounds(30, 100, 150, 31);
-
         hintItem.addActionListener(this);
         newGameItem.addActionListener(this);
         exitItem.addActionListener(this);
@@ -46,13 +47,18 @@ public class GameFrame extends JFrame implements ActionListener {
         menu.add(hintItem);
         menu.add(exitItem);
         menuBar.add(menu);
-
+        scoreLabel.setFont(new Font("Main", Font.BOLD, 10));
+        scoreLabel.setBounds(30, 250, 100, 30);
+        this.add(scoreLabel);
+        timeLabel.setFont(new Font("Main", Font.BOLD, 10));
+        timeLabel.setBounds(90, 250, 100, 30);
+        this.add(timeLabel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setJMenuBar(menuBar);
         this.setTitle("Міста");
         this.setLayout(null);
         this.setResizable(false);
-        this.setSize(450, 350);
+        this.setSize(480, 350);
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         this.add(label);
@@ -60,6 +66,13 @@ public class GameFrame extends JFrame implements ActionListener {
         this.add(label3);
         this.add(button);
         this.add(text);
+        timer = new Timer(1000, e -> {
+            long currentTime = System.currentTimeMillis();
+            long elapsedTime = (currentTime - startTime) / 1000;
+            timeLabel.setText("Час: " + elapsedTime + " с");
+        });
+        startTime = System.currentTimeMillis();
+        timer.start();
     }
 
     @Override
@@ -77,17 +90,21 @@ public class GameFrame extends JFrame implements ActionListener {
                             String compCity = cities.findCity(lastChar);
                             if (compCity == null) {
                                 cities.incrementUserScore();
+                                userScore += 100;
+                                scoreLabel.setText("<html>Бали: " + userScore + "<span style='color: green'>$</span></html>");
                                 resultMessage("Урааа! Ви виграли");
                             } else {
                                 label3.setText(compCity);
                                 label3.setForeground(Color.getHSBColor(39f, 1f, 1f));
                                 compScore++;
+                                userScore += 100;
+                                scoreLabel.setText("<html>Бали: " + userScore + "<span style='color: green'>$</span></html>");
                                 cities.incrementUserScore();
                                 text.setText("");
                                 cities.cityList.remove(str);
                             }
                         } else {
-                            JOptionPane.showMessageDialog(this, "Місто не знайдено або вже використано", "ERROR", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(this, "Місто не знайдено або вже використано", "Помилка", JOptionPane.ERROR_MESSAGE);
                             text.setText("");
                         }
 
@@ -99,6 +116,8 @@ public class GameFrame extends JFrame implements ActionListener {
                                 String compCity = cities.findCity(str.charAt(str.length() - 1));
                                 if (compCity == null) {
                                     cities.incrementUserScore();
+                                    userScore += 100;
+                                    scoreLabel.setText("<html>Бали: " + userScore + "<span style='color: green'>$</span></html>");
                                     resultMessage("Урааа! Ви виграли");
                                 } else {
                                     label3.setText(compCity);
@@ -106,24 +125,31 @@ public class GameFrame extends JFrame implements ActionListener {
                                     text.setText("");
                                     compScore++;
                                     cities.incrementUserScore();
+                                    userScore += 100;
+                                    scoreLabel.setText("<html>Бали: " + userScore + "<span style='color: green'>$</span></html>");
                                 }
                             } else {
-                                JOptionPane.showMessageDialog(this, "Місто не знайдено або вже використано", "ERROR", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(this, "Місто не знайдено або вже використано", "Помилка", JOptionPane.ERROR_MESSAGE);
                                 text.setText("");
                             }
 
                         } else {
-                            JOptionPane.showMessageDialog(this, "Помилка! Введіть слово, яке починається на останню букву слова комп'ютера.", "ERROR", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(this, "Помилка! Введіть слово, яке починається на останню букву слова комп'ютера.", "Помилка", JOptionPane.ERROR_MESSAGE);
                             text.setText("");
                         }
                     }
                 }
             }
-        } else if (e.getActionCommand().equals("Підказка")) {
-            String lastCompCity = cities.getLastCity();
-            char lastChar = Character.toLowerCase(lastCompCity.charAt(lastCompCity.length() - 1));
-            String hintCity = cities.cityList.stream().filter(city -> Character.toLowerCase(city.charAt(0)) == Character.toLowerCase(lastChar)).findFirst().orElse("Немає підказок");
-            text.setText(hintCity);
+        } else if (e.getActionCommand().equals("<html>Підказка <span style='color: red'> -150$</span></html>")) {
+            if (userScore >= 150) {
+                userScore -= 150;
+                String lastCompCity = cities.getLastCity();
+                char lastChar = Character.toLowerCase(lastCompCity.charAt(lastCompCity.length() - 1));
+                String hintCity = cities.cityList.stream().filter(city -> Character.toLowerCase(city.charAt(0)) == Character.toLowerCase(lastChar)).findFirst().orElse("Немає підказок");
+                text.setText(hintCity);
+            } else {
+                JOptionPane.showMessageDialog(this, "Недостатньо коштів", "Помилка", JOptionPane.ERROR_MESSAGE);
+            }
         } else if (e.getActionCommand().equals("Нова гра")) {
             this.dispose();
             new GameFrame();
@@ -133,9 +159,13 @@ public class GameFrame extends JFrame implements ActionListener {
     }
 
     public void resultMessage(String message) {
+        timer.stop();
+        long endTime = System.currentTimeMillis();
+        long totalTime = (endTime - startTime) / 1000;
         String[] options = {"Нова гра", "Вихід"};
-        int choice = JOptionPane.showOptionDialog(this, message + " з рахунком " + cities.getUserScore() + ":" + compScore, "Результат", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+        int choice = JOptionPane.showOptionDialog(this, message + " з рахунком " + cities.getUserScore() + ":" + compScore + "\nЧас: " + totalTime + "с" + "\nКількість балів: " + userScore, "Результат", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
         if (choice == 0) {
+            timer.start();
             this.dispose();
             new GameFrame();
         } else if (choice == 1) {
