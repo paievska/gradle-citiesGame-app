@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
 
 public class GameFrame extends JFrame implements ActionListener {
     JButton button = new JButton("Зробити хід");
@@ -23,10 +24,12 @@ public class GameFrame extends JFrame implements ActionListener {
     int movesCount = 0;
     int compScore = 0;
     int userScore = 0;
+    int recordScore;
     JLabel scoreLabel = new JLabel("<html>Бали: " + userScore + "<span style='color: green'>$</span></html>");
     JLabel timeLabel = new JLabel("Час: 0 с");
     long startTime;
     Timer timer;
+    String fileName = "recordScore.txt";
 
     public GameFrame() {
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/image.png")));
@@ -51,7 +54,7 @@ public class GameFrame extends JFrame implements ActionListener {
         scoreLabel.setBounds(30, 250, 100, 30);
         this.add(scoreLabel);
         timeLabel.setFont(new Font("Main", Font.BOLD, 10));
-        timeLabel.setBounds(90, 250, 100, 30);
+        timeLabel.setBounds(95, 250, 100, 30);
         this.add(timeLabel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setJMenuBar(menuBar);
@@ -73,6 +76,7 @@ public class GameFrame extends JFrame implements ActionListener {
         });
         startTime = System.currentTimeMillis();
         timer.start();
+        recordScore = readRecordScoreFromFile();
     }
 
     @Override
@@ -145,7 +149,7 @@ public class GameFrame extends JFrame implements ActionListener {
                 String lastCompCity = cities.getLastCity();
                 char lastChar = Character.toLowerCase(lastCompCity.charAt(lastCompCity.length() - 1));
                 String hintCity = cities.cityList.stream().filter(city -> Character.toLowerCase(city.charAt(0)) == Character.toLowerCase(lastChar)).findFirst().orElse("Немає підказок");
-                if (!hintCity.equalsIgnoreCase("Немає підказок")){
+                if (!hintCity.equalsIgnoreCase("Немає підказок")) {
                     userScore -= 150;
                 }
                 text.setText(hintCity);
@@ -154,9 +158,11 @@ public class GameFrame extends JFrame implements ActionListener {
             }
         } else if (e.getActionCommand().equals("Нова гра")) {
             this.dispose();
+            saveRecordScoreToFile(recordScore);
             new GameFrame();
         } else if (e.getActionCommand().equals("Вихід")) {
             this.dispose();
+            saveRecordScoreToFile(recordScore);
         }
     }
 
@@ -165,13 +171,42 @@ public class GameFrame extends JFrame implements ActionListener {
         long endTime = System.currentTimeMillis();
         long totalTime = (endTime - startTime) / 1000;
         String[] options = {"Нова гра", "Вихід"};
-        int choice = JOptionPane.showOptionDialog(this, message + " з рахунком " + cities.getUserScore() + ":" + compScore + "\nЧас: " + totalTime + "с" + "\nКількість балів: " + userScore, "Результат", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+        if (userScore > recordScore) {
+            recordScore = userScore;
+            JOptionPane.showMessageDialog(this, "Ви встановили новий рекорд!" + "\nНовий рекорд: " + recordScore + " балів");
+        }
+        int choice = JOptionPane.showOptionDialog(this, message + " з рахунком " + cities.getUserScore() + ":" + compScore + "\nЧас: " + totalTime + "с" + "\nКількість балів: " + userScore + "\nРекорд: " + recordScore + " балів", "Результат", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
         if (choice == 0) {
-            timer.start();
             this.dispose();
+            saveRecordScoreToFile(recordScore);
             new GameFrame();
         } else if (choice == 1) {
             this.dispose();
+            saveRecordScoreToFile(recordScore);
+        }
+    }
+
+    private void saveRecordScoreToFile(int highScore) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(fileName))) {
+            pw.write(Integer.toString(highScore));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private int readRecordScoreFromFile() {
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String currentRecordScore = br.readLine();
+            if (currentRecordScore == null) {
+                saveRecordScoreToFile(0);
+                return 0;
+            }
+            return Integer.parseInt(currentRecordScore);
+        } catch (FileNotFoundException e) {
+            saveRecordScoreToFile(0);
+            return 0;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
