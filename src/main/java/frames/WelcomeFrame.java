@@ -11,14 +11,11 @@ public class WelcomeFrame extends JFrame implements ActionListener {
 
     public WelcomeFrame() {
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/image.png")));
-
         button.setBounds(280, 25, 80, 20);
         button.addActionListener(this);
         button.setFocusable(false);
-
         label.setFont(new Font("Main", Font.BOLD, 10));
         label.setBounds(20, 30, 250, 10);
-
         this.setTitle("Вітаємо");
         this.setLayout(null);
         this.setResizable(false);
@@ -27,7 +24,6 @@ public class WelcomeFrame extends JFrame implements ActionListener {
         this.setLocationRelativeTo(null);
         this.add(label);
         this.add(button);
-
     }
 
     @Override

@@ -92,7 +92,7 @@ public class GameFrame extends JFrame implements ActionListener {
                     resultMessage("Упс! Ви програли");
                 } else {
                     if (movesCount > 0) {
-                        char lastChar = getLastChar(cities.getLastCity());
+                        char lastChar = cities.getLastChar(cities.getLastCity());
                         if (!(str.charAt(0) == lastChar)) {
                             JOptionPane.showMessageDialog(this, "Помилка! Введіть слово, яке починається на останню букву слова комп'ютера.", "Помилка", JOptionPane.ERROR_MESSAGE);
                             text.setText("");
@@ -104,13 +104,13 @@ public class GameFrame extends JFrame implements ActionListener {
                         userScore++;
                         int correctAnswerCost = 100;
                         userAccount += correctAnswerCost;
-                        String compCity = cities.findCity(getLastChar(str));
+                        String compCity = cities.findCity(cities.getLastChar(str));
                         if (compCity == null) {
                             scoreLabel.setText("<html>Бали: " + userAccount + "<span style='color: green'>$</span></html>");
                             resultMessage("Урааа! Ви виграли");
                         } else {
                             cities.removeCity(compCity);
-                            label3.setText(getPrettyName(compCity));
+                            label3.setText(cities.getPrettyName(compCity));
                             movesCount++;
                             text.setText("");
                             compScore++;
@@ -142,26 +142,16 @@ public class GameFrame extends JFrame implements ActionListener {
         }
     }
 
-    private String getPrettyName(String nameCity) {
-        return Character.toUpperCase(nameCity.charAt(0)) + nameCity.substring(1);
-    }
-
-    private char getLastChar(String cityName) {
-        char lastChar = cityName.charAt(cityName.length() - 1);
-        if (lastChar == 'ь') lastChar = cityName.charAt(cityName.length() - 2);
-        return lastChar;
-    }
-
     private void resultMessage(String message) {
         timer.stop();
         long endTime = System.currentTimeMillis();
         long totalTime = (endTime - startTime) / 1000;
         String[] options = {"Нова гра", "Вихід"};
         if (userScore > recordScore) {
-            recordScore = userScore;
+            recordScore = userAccount;
             JOptionPane.showMessageDialog(this, "Ви встановили новий рекорд!" + "\nНовий рекорд: " + recordScore + " балів");
         }
-        int choice = JOptionPane.showOptionDialog(this, message + " з рахунком " + userScore + ":" + compScore + "\nЧас: " + totalTime + "с" + "\nКількість балів: " + userScore + "\nРекорд: " + recordScore + " балів", "Результат", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+        int choice = JOptionPane.showOptionDialog(this, message + " з рахунком " + userScore + ":" + compScore + "\nЧас: " + totalTime + "с" + "\nКількість балів: " + userAccount + "\nРекорд: " + recordScore + " балів", "Результат", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
         if (choice == 0) {
             this.dispose();
             saveRecordScoreToFile(recordScore);
