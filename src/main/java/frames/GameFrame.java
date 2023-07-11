@@ -111,6 +111,7 @@ public class GameFrame extends JFrame implements ActionListener {
                         } else {
                             cities.removeCity(compCity);
                             label3.setText(cities.getPrettyName(compCity));
+                            label3.setForeground(Color.BLUE);
                             movesCount++;
                             text.setText("");
                             compScore++;
