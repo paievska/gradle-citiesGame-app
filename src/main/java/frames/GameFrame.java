@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
 
 public class GameFrame extends JFrame implements ActionListener {
     private final int hintCost = 150;
@@ -153,13 +154,42 @@ public class GameFrame extends JFrame implements ActionListener {
         long endTime = System.currentTimeMillis();
         long totalTime = (endTime - startTime) / 1000;
         String[] options = {"Нова гра", "Вихід"};
-        int choice = JOptionPane.showOptionDialog(this, message + " з рахунком " + userScore + ":" + compScore + "\nЧас: " + totalTime + "с" + "\nКількість балів: " + userAccount, "Результат", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+        if (userScore > recordScore) {
+            recordScore = userScore;
+            JOptionPane.showMessageDialog(this, "Ви встановили новий рекорд!" + "\nНовий рекорд: " + recordScore + " балів");
+        }
+        int choice = JOptionPane.showOptionDialog(this, message + " з рахунком " + cities.getUserScore() + ":" + compScore + "\nЧас: " + totalTime + "с" + "\nКількість балів: " + userScore + "\nРекорд: " + recordScore + " балів", "Результат", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
         if (choice == 0) {
-            timer.start();
             this.dispose();
+            saveRecordScoreToFile(recordScore);
             new GameFrame();
         } else if (choice == 1) {
             this.dispose();
+            saveRecordScoreToFile(recordScore);
+        }
+    }
+
+    private void saveRecordScoreToFile(int highScore) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(fileName))) {
+            pw.write(Integer.toString(highScore));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private int readRecordScoreFromFile() {
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String currentRecordScore = br.readLine();
+            if (currentRecordScore == null) {
+                saveRecordScoreToFile(0);
+                return 0;
+            }
+            return Integer.parseInt(currentRecordScore);
+        } catch (FileNotFoundException e) {
+            saveRecordScoreToFile(0);
+            return 0;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
