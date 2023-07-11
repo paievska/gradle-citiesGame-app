@@ -57,7 +57,7 @@ public class GameFrame extends JFrame implements ActionListener {
         scoreLabel.setBounds(30, 250, 100, 30);
         this.add(scoreLabel);
         timeLabel.setFont(new Font("Main", Font.BOLD, 10));
-        timeLabel.setBounds(90, 250, 100, 30);
+        timeLabel.setBounds(95, 250, 100, 30);
         this.add(timeLabel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setJMenuBar(menuBar);
