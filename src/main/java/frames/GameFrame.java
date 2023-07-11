@@ -9,29 +9,30 @@ import java.awt.event.ActionListener;
 import java.io.*;
 
 public class GameFrame extends JFrame implements ActionListener {
-    private final int hintCost = 150;
-    private final int correctAnswerCost = 100;
+    int hintCost = 150;
     private final String MENU_TEXT_TEMPLATE = "<html>Підказка <span style='color: red'> -" + hintCost + "$</span></html>";
-    private JButton button = new JButton("Зробити хід");
-    private JTextField text = new JTextField();
-    private String str = "";
-    private JLabel label = new JLabel("Введіть назву міста");
-    private JLabel label2 = new JLabel("Комп'ютер:");
-    private JLabel label3 = new JLabel("-");
-    private Cities cities = new Cities();
-    private JMenuBar menuBar = new JMenuBar();
-    private JMenu menu = new JMenu("Меню");
-    private JMenuItem newGameItem = new JMenuItem("Нова гра");
-    private JMenuItem hintItem = new JMenuItem(MENU_TEXT_TEMPLATE);
-    private JMenuItem exitItem = new JMenuItem("Вихід");
-    private int movesCount = 0;
-    private int compScore = 0;
-    private int userScore = 0;
-    private int userAccount = 0;
-    private JLabel scoreLabel = new JLabel("<html>Бали: " + userAccount + "<span style='color: green'>$</span></html>");
-    private JLabel timeLabel = new JLabel("Час: 0 с");
-    private long startTime;
-    private Timer timer;
+    JButton button = new JButton("Зробити хід");
+    JTextField text = new JTextField();
+    String str = "";
+    JLabel label = new JLabel("Введіть назву міста");
+    JLabel label2 = new JLabel("Комп'ютер:");
+    JLabel label3 = new JLabel("-");
+    Cities cities = new Cities();
+    JMenuBar menuBar = new JMenuBar();
+    JMenu menu = new JMenu("Меню");
+    JMenuItem newGameItem = new JMenuItem("Нова гра");
+    JMenuItem hintItem = new JMenuItem(MENU_TEXT_TEMPLATE);
+    JMenuItem exitItem = new JMenuItem("Вихід");
+    int movesCount = 0;
+    int compScore = 0;
+    int userScore = 0;
+    int userAccount = 0;
+    int recordScore;
+    JLabel scoreLabel = new JLabel("<html>Бали: " + userAccount + "<span style='color: green'>$</span></html>");
+    JLabel timeLabel = new JLabel("Час: 0 с");
+    long startTime;
+    Timer timer;
+    String fileName = "recordScore.txt";
 
     public GameFrame() {
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/image.png")));
@@ -78,6 +79,7 @@ public class GameFrame extends JFrame implements ActionListener {
         });
         startTime = System.currentTimeMillis();
         timer.start();
+        recordScore = readRecordScoreFromFile();
     }
 
     @Override
@@ -100,6 +102,7 @@ public class GameFrame extends JFrame implements ActionListener {
                     if (cities.getCityList().stream().anyMatch(city -> city.equals(str))) {
                         cities.removeCity(str);
                         userScore++;
+                        int correctAnswerCost = 100;
                         userAccount += correctAnswerCost;
                         String compCity = cities.findCity(getLastChar(str));
                         if (compCity == null) {
@@ -124,7 +127,7 @@ public class GameFrame extends JFrame implements ActionListener {
                 String lastCompCity = cities.getLastCity();
                 char lastChar = Character.toLowerCase(lastCompCity.charAt(lastCompCity.length() - 1));
                 String hintCity = cities.getCityList().stream().filter(city -> Character.toLowerCase(city.charAt(0)) == Character.toLowerCase(lastChar)).findFirst().orElse("Немає підказок");
-                if (!hintCity.equalsIgnoreCase("Немає підказок")){
+                if (!hintCity.equalsIgnoreCase("Немає підказок")) {
                     userAccount -= hintCost;
                 }
                 text.setText(hintCity);
@@ -146,9 +149,9 @@ public class GameFrame extends JFrame implements ActionListener {
     private char getLastChar(String cityName) {
         char lastChar = cityName.charAt(cityName.length() - 1);
         if (lastChar == 'ь') lastChar = cityName.charAt(cityName.length() - 2);
-        if (lastChar == 'й') lastChar = 'і';
         return lastChar;
     }
+
     private void resultMessage(String message) {
         timer.stop();
         long endTime = System.currentTimeMillis();
@@ -158,7 +161,7 @@ public class GameFrame extends JFrame implements ActionListener {
             recordScore = userScore;
             JOptionPane.showMessageDialog(this, "Ви встановили новий рекорд!" + "\nНовий рекорд: " + recordScore + " балів");
         }
-        int choice = JOptionPane.showOptionDialog(this, message + " з рахунком " + cities.getUserScore() + ":" + compScore + "\nЧас: " + totalTime + "с" + "\nКількість балів: " + userScore + "\nРекорд: " + recordScore + " балів", "Результат", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+        int choice = JOptionPane.showOptionDialog(this, message + " з рахунком " + userScore + ":" + compScore + "\nЧас: " + totalTime + "с" + "\nКількість балів: " + userScore + "\nРекорд: " + recordScore + " балів", "Результат", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
         if (choice == 0) {
             this.dispose();
             saveRecordScoreToFile(recordScore);
