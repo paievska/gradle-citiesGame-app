@@ -9,6 +9,8 @@ import java.awt.event.ActionListener;
 import java.io.*;
 
 public class GameFrame extends JFrame implements ActionListener {
+    int hintCost = 150;
+    private final String MENU_TEXT_TEMPLATE = "<html>Підказка <span style='color: red'> -" + hintCost + "$</span></html>";
     JButton button = new JButton("Зробити хід");
     JTextField text = new JTextField();
     String str = "";
@@ -19,13 +21,14 @@ public class GameFrame extends JFrame implements ActionListener {
     JMenuBar menuBar = new JMenuBar();
     JMenu menu = new JMenu("Меню");
     JMenuItem newGameItem = new JMenuItem("Нова гра");
-    JMenuItem hintItem = new JMenuItem("<html>Підказка <span style='color: red'> -150$</span></html>");
+    JMenuItem hintItem = new JMenuItem(MENU_TEXT_TEMPLATE);
     JMenuItem exitItem = new JMenuItem("Вихід");
     int movesCount = 0;
     int compScore = 0;
     int userScore = 0;
+    int userAccount = 0;
     int recordScore;
-    JLabel scoreLabel = new JLabel("<html>Бали: " + userScore + "<span style='color: green'>$</span></html>");
+    JLabel scoreLabel = new JLabel("<html>Бали: " + userAccount + "<span style='color: green'>$</span></html>");
     JLabel timeLabel = new JLabel("Час: 0 с");
     long startTime;
     Timer timer;
@@ -82,75 +85,50 @@ public class GameFrame extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == button) {
-            str = text.getText();
+            str = text.getText().toLowerCase();
             if (!str.isEmpty()) {
-                if (str.equalsIgnoreCase("Здаюсь")) {
+                if (str.equals("здаюсь")) {
                     compScore++;
                     resultMessage("Упс! Ви програли");
                 } else {
-                    if (movesCount == 0) {
-                        char lastChar = Character.toLowerCase(str.charAt(str.length() - 1));
-                        if (cities.cityList.stream().anyMatch(city -> city.equalsIgnoreCase(str))) {
-                            String compCity = cities.findCity(lastChar);
-                            if (compCity == null) {
-                                cities.incrementUserScore();
-                                userScore += 100;
-                                scoreLabel.setText("<html>Бали: " + userScore + "<span style='color: green'>$</span></html>");
-                                resultMessage("Урааа! Ви виграли");
-                            } else {
-                                label3.setText(compCity);
-                                label3.setForeground(Color.getHSBColor(39f, 1f, 1f));
-                                compScore++;
-                                userScore += 100;
-                                scoreLabel.setText("<html>Бали: " + userScore + "<span style='color: green'>$</span></html>");
-                                cities.incrementUserScore();
-                                text.setText("");
-                                cities.cityList.remove(str);
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(this, "Місто не знайдено або вже використано", "Помилка", JOptionPane.ERROR_MESSAGE);
-                            text.setText("");
-                        }
-
-                    } else {
-                        String lastCompCity = cities.getLastCity();
-                        char lastChar = Character.toLowerCase(lastCompCity.charAt(lastCompCity.length() - 1));
-                        if (Character.toLowerCase(str.charAt(0)) == lastChar) {
-                            if (cities.cityList.stream().anyMatch(city -> city.equalsIgnoreCase(str))) {
-                                String compCity = cities.findCity(str.charAt(str.length() - 1));
-                                if (compCity == null) {
-                                    cities.incrementUserScore();
-                                    userScore += 100;
-                                    scoreLabel.setText("<html>Бали: " + userScore + "<span style='color: green'>$</span></html>");
-                                    resultMessage("Урааа! Ви виграли");
-                                } else {
-                                    label3.setText(compCity);
-                                    movesCount++;
-                                    text.setText("");
-                                    compScore++;
-                                    cities.incrementUserScore();
-                                    userScore += 100;
-                                    scoreLabel.setText("<html>Бали: " + userScore + "<span style='color: green'>$</span></html>");
-                                }
-                            } else {
-                                JOptionPane.showMessageDialog(this, "Місто не знайдено або вже використано", "Помилка", JOptionPane.ERROR_MESSAGE);
-                                text.setText("");
-                            }
-
-                        } else {
+                    if (movesCount > 0) {
+                        char lastChar = cities.getLastChar(cities.getLastCity());
+                        if (!(str.charAt(0) == lastChar)) {
                             JOptionPane.showMessageDialog(this, "Помилка! Введіть слово, яке починається на останню букву слова комп'ютера.", "Помилка", JOptionPane.ERROR_MESSAGE);
                             text.setText("");
+                            return;
                         }
+                    }
+                    if (cities.getCityList().stream().anyMatch(city -> city.equals(str))) {
+                        cities.removeCity(str);
+                        userScore++;
+                        int correctAnswerCost = 100;
+                        userAccount += correctAnswerCost;
+                        String compCity = cities.findCity(cities.getLastChar(str));
+                        if (compCity == null) {
+                            scoreLabel.setText("<html>Бали: " + userAccount + "<span style='color: green'>$</span></html>");
+                            resultMessage("Урааа! Ви виграли");
+                        } else {
+                            cities.removeCity(compCity);
+                            label3.setText(cities.getPrettyName(compCity));
+                            movesCount++;
+                            text.setText("");
+                            compScore++;
+                            scoreLabel.setText("<html>Бали: " + userAccount + "<span style='color: green'>$</span></html>");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Місто не знайдено або вже використано", "Помилка", JOptionPane.ERROR_MESSAGE);
+                        text.setText("");
                     }
                 }
             }
-        } else if (e.getActionCommand().equals("<html>Підказка <span style='color: red'> -150$</span></html>")) {
-            if (userScore >= 150) {
+        } else if (e.getActionCommand().equals(MENU_TEXT_TEMPLATE)) {
+            if (userAccount >= hintCost) {
                 String lastCompCity = cities.getLastCity();
                 char lastChar = Character.toLowerCase(lastCompCity.charAt(lastCompCity.length() - 1));
-                String hintCity = cities.cityList.stream().filter(city -> Character.toLowerCase(city.charAt(0)) == Character.toLowerCase(lastChar)).findFirst().orElse("Немає підказок");
+                String hintCity = cities.getCityList().stream().filter(city -> Character.toLowerCase(city.charAt(0)) == Character.toLowerCase(lastChar)).findFirst().orElse("Немає підказок");
                 if (!hintCity.equalsIgnoreCase("Немає підказок")) {
-                    userScore -= 150;
+                    userAccount -= hintCost;
                 }
                 text.setText(hintCity);
             } else {
@@ -158,24 +136,22 @@ public class GameFrame extends JFrame implements ActionListener {
             }
         } else if (e.getActionCommand().equals("Нова гра")) {
             this.dispose();
-            saveRecordScoreToFile(recordScore);
             new GameFrame();
         } else if (e.getActionCommand().equals("Вихід")) {
             this.dispose();
-            saveRecordScoreToFile(recordScore);
         }
     }
 
-    public void resultMessage(String message) {
+    private void resultMessage(String message) {
         timer.stop();
         long endTime = System.currentTimeMillis();
         long totalTime = (endTime - startTime) / 1000;
         String[] options = {"Нова гра", "Вихід"};
         if (userScore > recordScore) {
-            recordScore = userScore;
+            recordScore = userAccount;
             JOptionPane.showMessageDialog(this, "Ви встановили новий рекорд!" + "\nНовий рекорд: " + recordScore + " балів");
         }
-        int choice = JOptionPane.showOptionDialog(this, message + " з рахунком " + cities.getUserScore() + ":" + compScore + "\nЧас: " + totalTime + "с" + "\nКількість балів: " + userScore + "\nРекорд: " + recordScore + " балів", "Результат", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+        int choice = JOptionPane.showOptionDialog(this, message + " з рахунком " + userScore + ":" + compScore + "\nЧас: " + totalTime + "с" + "\nКількість балів: " + userAccount + "\nРекорд: " + recordScore + " балів", "Результат", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
         if (choice == 0) {
             this.dispose();
             saveRecordScoreToFile(recordScore);

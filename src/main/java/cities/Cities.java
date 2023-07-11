@@ -12,15 +12,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class Cities {
-    public List<String> cityList = new ArrayList<>();
+    List<String> cityList = new ArrayList<>();
     String lastCity = "";
-    int userScore = 0;
 
     public Cities() {
-        city();
-    }
-
-    private void city() {
         try {
             Document doc = Jsoup.connect("https://en.wikipedia.org/wiki/List_of_cities_in_Ukraine").get();
             Element table = doc.select("table.wikitable.sortable").first();
@@ -30,7 +25,7 @@ public class Cities {
                 String lastCity = Objects.requireNonNull(secondColumn).text();
                 int index = lastCity.indexOf('(');
                 String ukrCity = index != -1 ? lastCity.substring(0, index).trim() : lastCity;
-                cityList.add(ukrCity);
+                cityList.add(ukrCity.toLowerCase());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -38,11 +33,10 @@ public class Cities {
     }
 
     public String findCity(char firstChar) {
+        char firstCharLowerCase = Character.toLowerCase(firstChar);
         Collections.shuffle(cityList);
-        for (int i = 0; i < cityList.size(); i++) {
-            String city = cityList.get(i);
-            if (Character.toLowerCase(city.charAt(0)) == Character.toLowerCase(firstChar)) {
-                cityList.remove(i);
+        for (String city : cityList) {
+            if (city.charAt(0) == firstCharLowerCase) {
                 lastCity = city;
                 return city;
             }
@@ -50,15 +44,25 @@ public class Cities {
         return null;
     }
 
+    public void removeCity(String name) {
+        cityList.remove(name);
+    }
+
     public String getLastCity() {
         return lastCity;
     }
 
-    public int getUserScore() {
-        return userScore;
+    public List<String> getCityList() {
+        return cityList;
     }
 
-    public void incrementUserScore() {
-        userScore++;
+    public String getPrettyName(String nameCity) {
+        return Character.toUpperCase(nameCity.charAt(0)) + nameCity.substring(1);
+    }
+
+    public char getLastChar(String cityName) {
+        char lastChar = cityName.charAt(cityName.length() - 1);
+        if (lastChar == 'ь') lastChar = cityName.charAt(cityName.length() - 2);
+        return lastChar;
     }
 }
