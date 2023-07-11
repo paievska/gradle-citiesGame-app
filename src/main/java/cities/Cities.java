@@ -12,9 +12,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class Cities {
-    private List<String> cityList = new ArrayList<>();
-    private String lastCity = "";
-    //private int userScore = 0;
+    List<String> cityList = new ArrayList<>();
+    String lastCity = "";
 
     public Cities() {
         try {
@@ -48,19 +47,22 @@ public class Cities {
     public void removeCity(String name) {
         cityList.remove(name);
     }
+
     public String getLastCity() {
         return lastCity;
     }
-
-//    public int getUserScore() {
-//        return userScore;
-//    }
 
     public List<String> getCityList() {
         return cityList;
     }
 
-//    public void incrementUserScore() {
-//        userScore++;
-//    }
+    public String getPrettyName(String nameCity) {
+        return Character.toUpperCase(nameCity.charAt(0)) + nameCity.substring(1);
+    }
+
+    public char getLastChar(String cityName) {
+        char lastChar = cityName.charAt(cityName.length() - 1);
+        if (lastChar == 'ь') lastChar = cityName.charAt(cityName.length() - 2);
+        return lastChar;
+    }
 }
