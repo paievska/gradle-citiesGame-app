@@ -131,15 +131,19 @@ public class GameFrame extends JFrame implements ActionListener {
                 if (!hintCity.equalsIgnoreCase("Немає підказок")) {
                     userAccount -= hintCost;
                 }
-                text.setText(hintCity);
+                text.setText(cities.getPrettyName(hintCity));
             } else {
                 JOptionPane.showMessageDialog(this, "Недостатньо коштів", "Помилка", JOptionPane.ERROR_MESSAGE);
             }
         } else if (e.getActionCommand().equals("Нова гра")) {
+            resultMessage(userScore > compScore ? "Урааа! Ви виграли" : userScore == compScore ? "Нічія." : "Упс! Ви програли" );
             this.dispose();
+            saveRecordScoreToFile(recordScore);
             new GameFrame();
         } else if (e.getActionCommand().equals("Вихід")) {
-            this.dispose();
+            resultMessage(userScore > compScore ? "Урааа! Ви виграли" : userScore == compScore ? "Нічія " : "Упс! Ви програли" );
+            saveRecordScoreToFile(recordScore);
+            System.exit(0);
         }
     }
 
@@ -148,7 +152,7 @@ public class GameFrame extends JFrame implements ActionListener {
         long endTime = System.currentTimeMillis();
         long totalTime = (endTime - startTime) / 1000;
         String[] options = {"Нова гра", "Вихід"};
-        if (userScore > recordScore) {
+        if (userAccount > recordScore) {
             recordScore = userAccount;
             JOptionPane.showMessageDialog(this, "Ви встановили новий рекорд!" + "\nНовий рекорд: " + recordScore + " балів");
         }
@@ -158,8 +162,8 @@ public class GameFrame extends JFrame implements ActionListener {
             saveRecordScoreToFile(recordScore);
             new GameFrame();
         } else if (choice == 1) {
-            this.dispose();
             saveRecordScoreToFile(recordScore);
+            System.exit(0);
         }
     }
 
