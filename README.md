@@ -18,15 +18,13 @@ It offers an engaging and challenging experience, testing players' knowledge of 
 * **Scoring System:** Players earn points for correctly entering city names, while incorrect or invalid entries result in no points.
 * **High Score Tracking:** The program records the highest score achieved during a game session, adding a competitive element for players to strive for.
 ## Screenshots
-<div>
-  <img width="483px" height="116px" hspace="15" src="https://github.com/paievska/Cities-game/assets/71642076/e40cf163-9d78-4120-98cd-769e8bcfdad3">
-</div>
-<div>
-  <img width="583px" height="429px" hspace="15" src="https://github.com/paievska/Cities-game/assets/71642076/4e992920-326a-4fa1-9375-d15cbc246dbc">
-</div>
-<div>
-  <img width="329px" height="154px" hspace="15" src="https://github.com/paievska/Cities-game/assets/71642076/0d142afe-c153-40ab-9929-d881d20d7117">
-</div>
-<div>
-  <img width="329px" height="202px" hspace="15" src="https://github.com/paievska/Cities-game/assets/71642076/d27f13a4-00a2-41a9-8a6f-178d0afa02d1">
-</div>
+![image](https://github.com/paievska/gradle-citiesGame-app/assets/71642076/6e8d6694-9353-41ba-a576-76f373f4d3c5)
+
+![image](https://github.com/paievska/gradle-citiesGame-app/assets/71642076/8d51f8b0-b722-43ff-a27d-490b45fee08c)
+
+![image](https://github.com/paievska/gradle-citiesGame-app/assets/71642076/95f0e1b5-610f-46f8-888d-adb8e50827ee)
+
+![image](https://github.com/paievska/gradle-citiesGame-app/assets/71642076/e7b8de3f-173a-4efb-9796-f68f0e533aa1)
+
+
+
