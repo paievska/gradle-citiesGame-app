@@ -7,13 +7,11 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 public class Cities {
-    List<String> cityList = new ArrayList<>();
-    String lastCity = "";
+    private final List<String> cityList = new ArrayList<>();
 
     public Cities() {
         try {
@@ -32,37 +30,7 @@ public class Cities {
         }
     }
 
-    public String findCity(char firstChar) {
-        char firstCharLowerCase = Character.toLowerCase(firstChar);
-        Collections.shuffle(cityList);
-        for (String city : cityList) {
-            if (city.charAt(0) == firstCharLowerCase) {
-                lastCity = city;
-                return city;
-            }
-        }
-        return null;
-    }
-
-    public void removeCity(String name) {
-        cityList.remove(name);
-    }
-
-    public String getLastCity() {
-        return lastCity;
-    }
-
     public List<String> getCityList() {
         return cityList;
-    }
-
-    public String getPrettyName(String nameCity) {
-        return Character.toUpperCase(nameCity.charAt(0)) + nameCity.substring(1);
-    }
-
-    public char getLastChar(String cityName) {
-        char lastChar = cityName.charAt(cityName.length() - 1);
-        if (lastChar == 'ь') lastChar = cityName.charAt(cityName.length() - 2);
-        return lastChar;
     }
 }
