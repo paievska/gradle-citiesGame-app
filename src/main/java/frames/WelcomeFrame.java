@@ -6,14 +6,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class WelcomeFrame extends JFrame implements ActionListener {
-    JButton button = new JButton("OK");
-    JLabel label = new JLabel("Вітаємо вас у грі дитинства і всіх розумників!");
+    private final JButton button = new JButton("OK");
 
     public WelcomeFrame() {
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/image.png")));
         button.setBounds(280, 25, 80, 20);
         button.addActionListener(this);
         button.setFocusable(false);
+        JLabel label = new JLabel("Вітаємо вас у грі дитинства і всіх розумників!");
         label.setFont(new Font("Main", Font.BOLD, 10));
         label.setBounds(20, 30, 250, 10);
         this.setTitle("Вітаємо");
